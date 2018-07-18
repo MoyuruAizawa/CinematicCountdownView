@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="CinematicCountdownView">
+    <attr format="color" name="color"/>
+    <attr format="dimension" name="countTextSize"/>
+    <attr format="float" name="autoSizingPercentage"/>
+    <attr format="boolean" name="autoSizingText"/>
+    <attr format="dimension" name="rimStrokeWidth"/>
+  </declare-styleable>
+</resources>
