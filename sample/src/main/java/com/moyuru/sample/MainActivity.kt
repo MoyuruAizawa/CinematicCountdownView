@@ -1,10 +1,9 @@
 package com.moyuru.sample
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import com.moyuru.cinematiccountdownview.CinematicCountdownView
-import kotlin.reflect.KProperty
 
 class MainActivity : AppCompatActivity() {
 
