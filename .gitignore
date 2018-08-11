@@ -80,3 +80,5 @@ hooks/pre-receive.sample
 hooks/prepare-commit-msg.sample
 hooks/update.sample
 info/exclude
+.idea/runConfigurations.xml
+.idea/vcs.xml
