@@ -2,12 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 
-final VERSION_NAME = "0.1"
+final VERSION_NAME = "0.2.0"
 
 android {
   compileSdkVersion 27
-
-
 
   defaultConfig {
     minSdkVersion 15
