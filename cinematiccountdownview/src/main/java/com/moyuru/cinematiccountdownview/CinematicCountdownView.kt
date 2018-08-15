@@ -29,11 +29,8 @@ class CinematicCountdownView(context: Context, attrs: AttributeSet?, defStyleAtt
   private val shouldAutoSizing = attributes.getBoolean(R.styleable.CinematicCountdownView_autoSizingText, false)
 
   private var animator: ValueAnimator? = null
+  private var remainingMilliSec = 0L
   private var currentMilliSec = 0L
-    set(value) {
-      field = value
-      invalidate()
-    }
   private val offset = dp(4)
   private val oval
     get() = RectF(
@@ -59,8 +56,8 @@ class CinematicCountdownView(context: Context, attrs: AttributeSet?, defStyleAtt
   override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
 
-    drawCircle(canvas, currentMilliSec)
-    drawText(canvas, currentMilliSec.toCountNumber())
+    drawCircle(canvas, currentMilliSec, remainingMilliSec)
+    drawText(canvas, remainingMilliSec)
   }
 
   override fun onDetachedFromWindow() {
@@ -68,16 +65,18 @@ class CinematicCountdownView(context: Context, attrs: AttributeSet?, defStyleAtt
     super.onDetachedFromWindow()
   }
 
-  private fun drawCircle(canvas: Canvas, milliSec: Long) {
-    if (milliSec > 0L && milliSec % 1000 == 0L) canvas.drawArc(360f)
-    else canvas.drawArc(360 * (1000f - milliSec % 1000) / 1000)
+  private fun drawCircle(canvas: Canvas, currentMilliSec: Long, remainingMilliSec: Long) {
+    if (remainingMilliSec <= 0) return
+    if (currentMilliSec > 999L && currentMilliSec % 1000 == 0L) canvas.drawArc(360f)
+    else canvas.drawArc(currentMilliSec % 1000 / 1000f * 360)
   }
 
-  private fun drawText(canvas: Canvas, sec: Int) {
-    val secString = sec.toString()
-    if (shouldAutoSizing) textPaint.adjustTextSize(secString)
+  private fun drawText(canvas: Canvas, remainingMilliSec: Long) {
+    if (remainingMilliSec <= 0) return
+    val remainingSec = remainingMilliSec.toCountNumber().toString()
+    if (shouldAutoSizing) textPaint.adjustTextSize(remainingSec)
     canvas.drawText(
-        secString,
+        remainingSec,
         width / 2f,
         (height / 2) + (textPaint.fontMetrics.run { top.absoluteValue + descent.absoluteValue } / 4),
         textPaint
@@ -107,12 +106,17 @@ class CinematicCountdownView(context: Context, attrs: AttributeSet?, defStyleAtt
   fun count(sec: Long, onEnd: () -> Unit = {}) {
     animator?.cancel()
 
-    val milliSec = TimeUnit.SECONDS.toMillis(sec)
-    ValueAnimator.ofInt(0, milliSec.toInt())
+    val countMilliSec = TimeUnit.SECONDS.toMillis(sec)
+    ValueAnimator.ofInt(0, countMilliSec.toInt())
         .apply {
-          addUpdateListener { currentMilliSec = milliSec - (it.animatedValue as Int).toLong() }
+          addUpdateListener {
+            val animatedMilliSec = (it.animatedValue as Int).toLong()
+            remainingMilliSec =  countMilliSec - animatedMilliSec
+            currentMilliSec = animatedMilliSec
+            invalidate()
+          }
           interpolator = null
-          duration = milliSec
+          duration = countMilliSec
           animator = this
           addListener(object : AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) = Unit
